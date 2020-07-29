@@ -22,7 +22,6 @@ RUN git clone https://github.com/input-output-hk/cardano-node.git && \
     git fetch --all --tags && \
     git checkout ${CARDANO_NODE_REPO_TAG}
 WORKDIR /app/cardano-node
-COPY config/cabal.project.local .
 RUN cabal build cardano-cli && \
     mv ./dist-newstyle/build/x86_64-linux/ghc-8.6.5/cardano-cli-${CARDANO_CLI_VERSION}/x/cardano-cli/build/cardano-cli/cardano-cli /usr/local/bin/
 
