@@ -32,7 +32,10 @@ RUN cardano-cli --version
 
 FROM debian:buster-slim
 COPY --from=builder /usr/lib /usr/lib
+COPY --from=builder /usr/local/lib /usr/local/lib
 COPY --from=builder /etc /etc
 COPY --from=builder /usr/local/bin/cardano-cli /usr/local/bin/cardano-cli
+ENV LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
 ENV CARDANO_NODE_SOCKET_PATH=/node-ipc/node.socket
 ENTRYPOINT ["cardano-cli"]
+CMD [ "--help" ]
