@@ -1,6 +1,6 @@
 FROM debian:buster-slim as builder
-ARG CARDANO_CLI_VERSION=1.18.0
-ARG CARDANO_NODE_REPO_TAG=42f17e5cb3050e489b7e7c879d1af809cedacf62
+ARG CARDANO_CLI_VERSION=1.18.1
+ARG CARDANO_NODE_REPO_TAG=a4b6dae699fa21dc3c025c8a83d1718475cb3afc
 RUN apt-get update && apt-get install -y \
     build-essential pkg-config libffi-dev libgmp-dev libssl-dev libtinfo-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget libncursesw5 libtool autoconf
 WORKDIR /app/cabal
