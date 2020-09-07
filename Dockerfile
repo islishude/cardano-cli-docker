@@ -1,6 +1,6 @@
 FROM debian:buster-slim as builder
-ARG CARDANO_CLI_VERSION=1.19.0
-ARG CARDANO_NODE_REPO_TAG=4814003f14340d5a1fc02f3ac15437387a7ada9f
+ARG CARDANO_CLI_VERSION=1.19.1
+ARG CARDANO_NODE_REPO_TAG=497afd7dedc5d5b9bdcdb0e3cac6a50bd9f7dd54
 RUN apt-get update && apt-get install -y \
     build-essential pkg-config libffi-dev libgmp-dev libssl-dev libtinfo-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget libncursesw5 libtool autoconf
 WORKDIR /app/cabal
@@ -26,8 +26,8 @@ ENV PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH"
 WORKDIR /app/cardano-node
 RUN git clone https://github.com/input-output-hk/cardano-node.git . && \
     git checkout ${CARDANO_NODE_REPO_TAG}
-RUN cabal build cardano-cli && \
-    mv ./dist-newstyle/build/x86_64-linux/ghc-8.6.5/cardano-cli-${CARDANO_CLI_VERSION}/x/cardano-cli/build/cardano-cli/cardano-cli /usr/local/bin/
+RUN cabal build cardano-cli
+RUN mv ./dist-newstyle/build/x86_64-linux/ghc-8.6.5/cardano-cli-${CARDANO_CLI_VERSION}/x/cardano-cli/build/cardano-cli/cardano-cli /usr/local/bin/
 RUN cardano-cli --version
 
 FROM debian:buster-slim
