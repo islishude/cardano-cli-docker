@@ -1,19 +1,21 @@
 FROM debian:buster-slim as builder
-ARG CARDANO_CLI_VERSION=1.21.1
-ARG CARDANO_NODE_REPO_TAG=a819311473563cb2ab3cd91543cf0f63facdf43e
+ARG CARDANO_CLI_VERSION=1.23.0
+ARG CARDANO_NODE_REPO_TAG=eed250546fa9acec4c9de557b3e3551c1f682a30
 RUN apt-get update && apt-get install -y \
-    build-essential pkg-config libffi-dev libgmp-dev libssl-dev libtinfo-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget libncursesw5 libtool autoconf
+    automake build-essential pkg-config libffi-dev libgmp-dev libssl-dev libtinfo-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget libncursesw5 libtool autoconf
 WORKDIR /app/cabal
-RUN wget https://downloads.haskell.org/~cabal/cabal-install-3.2.0.0/cabal-install-3.2.0.0-x86_64-unknown-linux.tar.xz && \
-    tar -xf cabal-install-3.2.0.0-x86_64-unknown-linux.tar.xz && \
-    rm cabal-install-3.2.0.0-x86_64-unknown-linux.tar.xz cabal.sig && \
+ARG CABAL_VERSION=3.2.0.0
+RUN wget https://downloads.haskell.org/~cabal/cabal-install-${CABAL_VERSION}/cabal-install-${CABAL_VERSION}-x86_64-unknown-linux.tar.xz && \
+    tar -xf cabal-install-${CABAL_VERSION}-x86_64-unknown-linux.tar.xz && \
+    rm cabal-install-${CABAL_VERSION}-x86_64-unknown-linux.tar.xz cabal.sig && \
     mv cabal /usr/local/bin/
 RUN cabal update
 WORKDIR /app/ghc
-RUN wget https://downloads.haskell.org/~ghc/8.6.5/ghc-8.6.5-x86_64-deb9-linux.tar.xz && \
-    tar -xf ghc-8.6.5-x86_64-deb9-linux.tar.xz && \
-    rm ghc-8.6.5-x86_64-deb9-linux.tar.xz
-WORKDIR /app/ghc/ghc-8.6.5
+ARG GHC_VERSION=8.10.2
+RUN wget https://downloads.haskell.org/~ghc/${GHC_VERSION}/ghc-${GHC_VERSION}-x86_64-deb10-linux.tar.xz && \
+    tar -xf ghc-${GHC_VERSION}-x86_64-deb10-linux.tar.xz && \
+    rm ghc-${GHC_VERSION}-x86_64-deb10-linux.tar.xz
+WORKDIR /app/ghc/ghc-${GHC_VERSION}
 RUN ./configure && make install
 WORKDIR /app/libsodium
 RUN git clone https://github.com/input-output-hk/libsodium . && \
@@ -27,7 +29,7 @@ WORKDIR /app/cardano-node
 RUN git clone https://github.com/input-output-hk/cardano-node.git . && \
     git checkout ${CARDANO_NODE_REPO_TAG}
 RUN cabal build cardano-cli
-RUN mv ./dist-newstyle/build/x86_64-linux/ghc-8.6.5/cardano-cli-${CARDANO_CLI_VERSION}/x/cardano-cli/build/cardano-cli/cardano-cli /usr/local/bin/
+RUN mv ./dist-newstyle/build/x86_64-linux/ghc-${GHC_VERSION}/cardano-cli-${CARDANO_CLI_VERSION}/x/cardano-cli/build/cardano-cli/cardano-cli /usr/local/bin/
 RUN cardano-cli --version
 
 FROM debian:buster-slim
